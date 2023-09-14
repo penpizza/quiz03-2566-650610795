@@ -7,31 +7,39 @@ export const GET = async () => {
   readDB();
   return NextResponse.json({
     ok: true,
-    //rooms:
-    //totalRooms:
+    rooms: DB.rooms, 
+    totalRooms:DB.rooms.length,
   });
 };
 
 export const POST = async (request) => {
-  const payload = checkToken();
+  const body = await request.json();
+  let roomName = null;
+  let role = null;
 
-  // return NextResponse.json(
-  //   {
-  //     ok: false,
-  //     message: "Invalid token",
-  //   },
-  //   { status: 401 }
-  // );
+  const payload = checkToken();
+  roomName = payload.roomName;
+  role = payload.role;
+
+  return NextResponse.json(
+    {
+      ok: false,
+      message: "Invalid token",
+    },
+    { status: 401 }
+  );
+
 
   readDB();
-
-  // return NextResponse.json(
-  //   {
-  //     ok: false,
-  //     message: `Room ${"replace this with room name"} already exists`,
-  //   },
-  //   { status: 400 }
-  // );
+   if(body.roomName === DB.roomName){  
+    return NextResponse.json(
+    {
+      ok: false,
+      message: `Room ${body.roomName} already exists`,
+    },
+    { status: 400 }
+  );
+}
 
   const roomId = nanoid();
 
@@ -40,7 +48,7 @@ export const POST = async (request) => {
 
   return NextResponse.json({
     ok: true,
-    //roomId,
-    message: `Room ${"replace this with room name"} has been created`,
+    roomId,
+    message: `Room ${body.roomName} has been created`,
   });
 };
